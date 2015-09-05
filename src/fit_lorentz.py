@@ -30,7 +30,7 @@ def residuals(p, y, x):
     return err
 
 
-def perform_fitting(X, Y):
+def perform_fitting(X, Y, omega_0, gamma_0, amplitude):
     ind_bg_low = (X > min(X)) & (X < 450.0)
     ind_bg_high = (X > 600.0) & (X < max(X))
     x_bg = numpy.concatenate((X[ind_bg_low], X[ind_bg_high]))
@@ -41,10 +41,13 @@ def perform_fitting(X, Y):
     y_bg_corr = Y - background
     y_bg_peak_corr = Y - background
     # fit triple lorentz
-    coefficients = [[3.5, 521.6, 12e3], [70, 480, 6000], [25, 500,
+    coefficients = [[gamma_0, omega_0, amplitude], [70, 480, 6000], [25, 500,
                                                           14000]]  # [[3.5,521.6,12e3],[60,480,30],[30,496,3000]]  # [hwhm, peak center, intensity] for three peaks
     pbest = leastsq(residuals, coefficients, args=(y_bg_corr, X), full_output=1)
-    best_parameters = [pbest[0][:3], pbest[0][3:6], pbest[0][6:]]
+    best_parameters = []
+    for i in range(0, int(len(pbest[0])/3)):
+        best_parameters.append(pbest[0][3*i : 3*(i+1)])
+    #best_parameters = [pbest[0][:3], pbest[0][3:6], pbest[0][6:]]
     # subtract peaks at 480cm^-1 and 496cm^-1
     best_params = iter(best_parameters)
     next(best_params)

@@ -58,12 +58,12 @@ def normalized_intensity(omega, d, N, omega_0, gamma_0):
     return total_intensity(omega, d, N, omega_0, gamma_0) / find_max_intensity(d, omega_0, gamma_0)
 
 
-def find_grain_diameter(X, Y, min_size, max_size, size_step, omega_0, gamma_0, peak_height, offset):
+def find_grain_diameter(X, Y, min_size, max_size, size_step, omega_0, gamma_0, peak_height, return_figure):
     X_ex = X
-    Y_ex = fit_lorentz.perform_fitting(X_ex, Y)
+    Y_ex = fit_lorentz.perform_fitting(X_ex, Y, omega_0, gamma_0, peak_height)
 
-    fittingResult=fit_old.perform_fitting(X_ex, Y_ex, 500, 600)
-    singleLorentzParameters=fittingResult[0]
+    fitting_result = fit_old.perform_fitting(X_ex, Y_ex, 500, 600)
+    single_lorentz_parameters = fitting_result[0]
     x_constraint = (X_ex < 535) * (X_ex > 510)
     X_fit = X_ex[x_constraint]
     Y_fit = Y_ex[x_constraint]
@@ -73,20 +73,24 @@ def find_grain_diameter(X, Y, min_size, max_size, size_step, omega_0, gamma_0, p
     omega_exp = arange(450, 600, 1)
     for diameter in list:
         delta = 0
-        delta = np.sum(np.abs(Y_fit - (singleLorentzParameters[2] * normalized_intensity(X_fit, diameter, 100, omega_0, gamma_0) + singleLorentzParameters[3])))
+        delta = np.sum(np.abs(Y_fit - (single_lorentz_parameters[2] * normalized_intensity(X_fit, diameter, 100, omega_0, gamma_0) + single_lorentz_parameters[3])))
         suma.append(delta)
 
     print min(suma), suma.index(min(suma)) * size_step + min_size
     nanograin_size = suma.index(min(suma)) * size_step + min_size
-    figure = plt.Figure()
-    my_plot = figure.add_subplot(111)
-    my_plot.plot(omega_exp,
-                 [singleLorentzParameters[2] * normalized_intensity(omega, nanograin_size, 100, omega_0, gamma_0) + singleLorentzParameters[3]
-                  for omega in omega_exp], label="fitted for %snm" % nanograin_size)
-    my_plot.plot(X_fit, Y_fit, "o", label="exp data", color="c")
-    my_plot.legend(loc=1)
-    return (nanograin_size, figure)
 
+    if return_figure:
+        figure = plt.Figure()
+        my_plot = figure.add_subplot(111)
+        my_plot.plot(omega_exp,
+                     [single_lorentz_parameters[2] * normalized_intensity(omega, nanograin_size, 100, omega_0, gamma_0) + single_lorentz_parameters[3]
+                      for omega in omega_exp], label="fitted for %snm" % nanograin_size)
+        my_plot.plot(X_fit, Y_fit, ".", label="exp data", color="c")
+        figure.suptitle("d:{0:.1f}[nm]   omega:{1:.4f}[cm^-1]   hwhm:{2:.4f}[cm^-1]   inten:{3:.4}[arb]".format(nanograin_size, single_lorentz_parameters[0], single_lorentz_parameters[1], single_lorentz_parameters[2]))
+        my_plot.legend(loc=1)
+        return nanograin_size, single_lorentz_parameters[0], single_lorentz_parameters[1], single_lorentz_parameters[2], figure
+    else:
+        return nanograin_size, single_lorentz_parameters[0], single_lorentz_parameters[1], single_lorentz_parameters[2]
 
 #########################################################################    
 def main():
