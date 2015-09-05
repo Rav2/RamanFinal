@@ -44,13 +44,18 @@ def map_maker():
     f.colorbar(b)
     global canvas
     canvas = FigureCanvasTkAgg(f, master=GUI)
-    canvas.get_tk_widget().place(x=0, y=0)
+    canvas.get_tk_widget().place(x=0, y=30)
     canvas.get_tk_widget().config(border=0)
     notification_label.config(text="")
+
     map_rbtn_one.place(x=10, y=484)
     map_rbtn_two.place(x=110, y=484)
     map_rbtn_three.place(x=210, y=484)
     map_rbtn_four.place(x=310, y=484)
+    map_param_rbtn_one.place(x=10, y=5)
+    map_param_rbtn_two.place(x=110, y=5)
+    map_param_rbtn_three.place(x=210, y=5)
+    map_param_rbtn_four.place(x=310, y=5)
     global first_mapping
     first_mapping = 0
 
@@ -68,12 +73,19 @@ def single_fitting():
     f = result[1]
     global canvas
     canvas = FigureCanvasTkAgg(f, master=GUI)
-    canvas.get_tk_widget().place(x=0, y=0)
+    canvas.get_tk_widget().place(x=0, y=30)
     canvas.get_tk_widget().configure(border=0)
+
     map_rbtn_one.place_forget()
     map_rbtn_two.place_forget()
     map_rbtn_three.place_forget()
     map_rbtn_four.place_forget()
+
+    map_param_rbtn_one.place_forget()
+    map_param_rbtn_two.place_forget()
+    map_param_rbtn_three.place_forget()
+    map_param_rbtn_four.place_forget()
+
 
 def calibrate():
     # LOADING DATA AND AGGREGATION
@@ -95,12 +107,18 @@ def calibrate():
     f = result[1]
     global canvas
     canvas = FigureCanvasTkAgg(f, master=GUI)
-    canvas.get_tk_widget().place(x=0, y=0)
-    canvas.get_tk_widget().configure(border=0)
+    canvas.get_tk_widget().place(x=0, y=30)
+    canvas.get_tk_widget().configure(border=0
+                                     )
     map_rbtn_one.place_forget()
     map_rbtn_two.place_forget()
     map_rbtn_three.place_forget()
     map_rbtn_four.place_forget()
+
+    map_param_rbtn_one.place_forget()
+    map_param_rbtn_two.place_forget()
+    map_param_rbtn_three.place_forget()
+    map_param_rbtn_four.place_forget()
 ###############################################################################
 ########################GUI ELEMENTS###########################################   
 GUI = tk.Tk()
@@ -110,8 +128,8 @@ GUI.title("RamanMaps")
 
 f = Figure(facecolor='white')
 canvas = FigureCanvasTkAgg(f, master=GUI)
-canvas.get_tk_widget().place(x=0, y=0)
-canvas.get_tk_widget().configure(border=0, width=650, height=480)
+canvas.get_tk_widget().place(x=0, y=30)
+canvas.get_tk_widget().configure(border=0, width=650, height=450)
 notification_label = tk.Label()
 notification_label.config(
     text="Please note, that mapping may take even a few hours, depending on number of measurements.")
@@ -190,36 +208,36 @@ def map_radio_button_select(event):
     if event.widget["value"] == 1:
         f.clf()
         a = f.add_subplot(1, 1, 1)
-        b = a.pcolor(arguments_for_map[0], cmap='PuBuGn', vmin=arguments_for_map[1],
+        b = a.pcolor(arguments_for_map[0], cmap='Reds', vmin=arguments_for_map[1],
                  vmax=arguments_for_map[2])  #inne fajne cmap'y do wyboru: 'seismic' , 'coolwarm'
         f.colorbar(b)
         global canvas
         canvas.get_tk_widget().destroy()
         canvas = FigureCanvasTkAgg(f, master=GUI)
-        canvas.get_tk_widget().place(x=0, y=0)
-        canvas.get_tk_widget().config(border=0, bg='yellow', width=650, height=480)
+        canvas.get_tk_widget().place(x=0, y=30)
+        canvas.get_tk_widget().config(border=0, bg='yellow', width=650, height=450)
     if event.widget["value"] == 2:
         f.clf()
         a = f.add_subplot(1, 1, 1)
-        b = a.pcolor(arguments_for_map[0], cmap='coolwarm', vmin=arguments_for_map[1],
+        b = a.pcolor(arguments_for_map[0], cmap='YlOrRd', vmin=arguments_for_map[1],
                  vmax=arguments_for_map[2])  #inne fajne cmap'y do wyboru: 'seismic' , 'coolwarm'
         f.colorbar(b)
         global canvas
         canvas.get_tk_widget().destroy()
         canvas = FigureCanvasTkAgg(f, master=GUI)
-        canvas.get_tk_widget().place(x=0, y=0)
-        canvas.get_tk_widget().config(border=0, bg='red', width=650, height=480)
+        canvas.get_tk_widget().place(x=0, y=30)
+        canvas.get_tk_widget().config(border=0, bg='red', width=650, height=450)
     if event.widget["value"] == 3:
         f.clf()
         a = f.add_subplot(1, 1, 1)
-        b = a.pcolor(arguments_for_map[0], cmap='seismic', vmin=arguments_for_map[1],
+        b = a.pcolor(arguments_for_map[0], cmap='winter', vmin=arguments_for_map[1],
                  vmax=arguments_for_map[2])  #inne fajne cmap'y do wyboru: 'seismic' , 'coolwarm'
         f.colorbar(b)
         global canvas
         canvas.get_tk_widget().destroy()
         canvas = FigureCanvasTkAgg(f, master=GUI)
-        canvas.get_tk_widget().place(x=0, y=0)
-        canvas.get_tk_widget().config(border=0, bg='black', width=650, height=480)
+        canvas.get_tk_widget().place(x=0, y=30)
+        canvas.get_tk_widget().config(border=0, bg='black', width=650, height=450)
     if event.widget["value"] == 4:
         f.clf()
         a = f.add_subplot(1, 1, 1)
@@ -229,8 +247,56 @@ def map_radio_button_select(event):
         global canvas
         canvas.get_tk_widget().destroy()
         canvas = FigureCanvasTkAgg(f, master=GUI)
-        canvas.get_tk_widget().place(x=0, y=0)
-        canvas.get_tk_widget().config(border=0, bg='green', width=650, height=480)
+        canvas.get_tk_widget().place(x=0, y=30)
+        canvas.get_tk_widget().config(border=0, bg='green', width=650, height=450)
+
+
+def map_param_radio_button_select(event):
+    if event.widget["value"] == 1:
+        f.clf()
+        a = f.add_subplot(1, 1, 1)
+        b = a.pcolor(arguments_for_map[0], cmap='PuBuGn', vmin=arguments_for_map[1],
+                 vmax=arguments_for_map[2])  #inne fajne cmap'y do wyboru: 'seismic' , 'coolwarm'
+        f.colorbar(b)
+        global canvas
+        canvas.get_tk_widget().destroy()
+        canvas = FigureCanvasTkAgg(f, master=GUI)
+        canvas.get_tk_widget().place(x=0, y=30)
+        canvas.get_tk_widget().config(border=0, bg='yellow', width=650, height=450)
+    if event.widget["value"] == 2:
+        f.clf()
+        a = f.add_subplot(1, 1, 1)
+        b = a.pcolor(arguments_for_map[0], cmap='coolwarm', vmin=arguments_for_map[1],
+                 vmax=arguments_for_map[2])  #inne fajne cmap'y do wyboru: 'seismic' , 'coolwarm'
+        f.colorbar(b)
+        global canvas
+        canvas.get_tk_widget().destroy()
+        canvas = FigureCanvasTkAgg(f, master=GUI)
+        canvas.get_tk_widget().place(x=0, y=30)
+        canvas.get_tk_widget().config(border=0, bg='red', width=650, height=450)
+    if event.widget["value"] == 3:
+        f.clf()
+        a = f.add_subplot(1, 1, 1)
+        b = a.pcolor(arguments_for_map[0], cmap='seismic', vmin=arguments_for_map[1],
+                 vmax=arguments_for_map[2])  #inne fajne cmap'y do wyboru: 'seismic' , 'coolwarm'
+        f.colorbar(b)
+        global canvas
+        canvas.get_tk_widget().destroy()
+        canvas = FigureCanvasTkAgg(f, master=GUI)
+        canvas.get_tk_widget().place(x=0, y=30)
+        canvas.get_tk_widget().config(border=0, bg='black', width=650, height=450)
+    if event.widget["value"] == 4:
+        f.clf()
+        a = f.add_subplot(1, 1, 1)
+        b = a.pcolor(arguments_for_map[0], cmap='rainbow', vmin=arguments_for_map[1],
+                 vmax=arguments_for_map[2])  #inne fajne cmap'y do wyboru: 'seismic' , 'coolwarm'
+        f.colorbar(b)
+        global canvas
+        canvas.get_tk_widget().destroy()
+        canvas = FigureCanvasTkAgg(f, master=GUI)
+        canvas.get_tk_widget().place(x=0, y=30)
+        canvas.get_tk_widget().config(border=0, bg='green', width=650, height=450)
+
 
 
 v = tk.IntVar()
@@ -346,6 +412,39 @@ map_rbtn_one.place_forget()
 map_rbtn_two.place_forget()
 map_rbtn_three.place_forget()
 map_rbtn_four.place_forget()
+
+map_param_var = tk.IntVar()
+map_param_rbtn_one = tk.Radiobutton(GUI,
+                          text="diameter",
+                          padx=0,
+                          variable=map_param_var,
+                          value=1)
+map_param_rbtn_one.select()
+map_param_rbtn_one.bind("<Button-1>", map_param_radio_button_select)
+
+map_param_rbtn_two = tk.Radiobutton(GUI,
+                          text="mode2",
+                          padx=0,
+                          variable=map_param_var,
+                          value=2)
+map_param_rbtn_two.bind("<Button-1>", map_param_radio_button_select)
+map_param_rbtn_three = tk.Radiobutton(GUI,
+                            text="mode3",
+                            padx=0,
+                            variable=map_param_var,
+                            value=3)
+map_param_rbtn_three.bind("<Button-1>", map_param_radio_button_select)
+map_param_rbtn_four = tk.Radiobutton(GUI,
+                            text="mode4",
+                            padx=0,
+                            variable=map_param_var,
+                            value=4)
+map_param_rbtn_four.bind("<Button-1>", map_param_radio_button_select)
+map_param_rbtn_one.place_forget()
+map_param_rbtn_two.place_forget()
+map_param_rbtn_three.place_forget()
+map_param_rbtn_four.place_forget()
+
 GUI.mainloop()
 
 

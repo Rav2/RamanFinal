@@ -12,17 +12,12 @@ def agg_data(data, min_size, max_size, size_step, omega_0, gamma_0, amplitude, o
     result = []
     column = []
 
+    print "len x"
+    print len(X)
 
     for ii in range(0, len(X)):
-        if (X[ii] != current_X):
-            print("y")
-            print(current_Y)
-            print("x")
-            print(current_X)
-            result.append(column)
-            column = []
-            current_X = X[ii]
-        if (Y[ii] != current_Y):
+
+        if Y[ii] != current_Y:
 
             choose_condition = (Y == current_Y)
             func_result = nanograin_size.find_grain_diameter(raman_shift[choose_condition], intensity[choose_condition],
@@ -30,7 +25,17 @@ def agg_data(data, min_size, max_size, size_step, omega_0, gamma_0, amplitude, o
                                                              offset)
             column.append(func_result[0])  # function returns (diameter, figure with plot)
             current_Y = Y[ii]
-        if (ii == (len(X) - 1)):
+
+        if X[ii] != current_X:
+            print("y")
+            print(current_Y)
+            print("x")
+            print(current_X)
+            result.append(column)
+            column = []
+            current_X = X[ii]
+
+        if ii == (len(X) - 1):
             choose_condition = (Y == current_Y)
             func_result = nanograin_size.find_grain_diameter(raman_shift[choose_condition], intensity[choose_condition],
                                                              min_size, max_size, size_step, omega_0, gamma_0, amplitude,
