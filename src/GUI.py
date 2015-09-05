@@ -62,7 +62,7 @@ def map_maker():
 
 def single_fitting():
     # LOADING DATA AND AGGREGATION
-    data = load_files.load_two_column_file(file_name.get())
+    data = load_files.load_mapping_file(file_name.get())
     omega = data[2]
     intensity = data[3]
     result = ns.find_grain_diameter(omega, intensity, float(min_size.get()), float(max_size.get()),

@@ -18,12 +18,14 @@ height_from_fit = 71535.2586963  #z pliku tekstowego
 
 #########################################################################
 ###########################DEFINING FUNCTIONS##########################
+def alfa(d):
+    return 7.87*d
+
 def w(q, omega_0):
     return omega_0 - 120 * (q / q0) ** 2
 
-
 def c(q, d):
-    return math.exp(((-1) * q ** 2 * d ** 2) / 40)
+    return math.exp(((-1) * q ** 2 * d ** 2) / (2 * alfa(d)))
 
 
 def intensity(omega, q, d, omega_0, gamma_0):
@@ -43,47 +45,40 @@ def total_intensity(omega, d, N, omega_0, gamma_0):
     return h * inten
 
 
-def find_max_intensity(d, omega_experiment, omega_0, gamma_0):
-    max = 0
-    for omega_value in omega_experiment:
-        if total_intensity(omega_value, d, 100, omega_0, gamma_0) > max:
-            max = total_intensity(omega_value, d, 100, omega_0, gamma_0)
-    # print omegamax
-    # return (max,grainmaxsize,omegamax)
-    return max
+def find_max_intensity(d, omega_0, gamma_0):
+    omega1=arange(500, 530, 0.01)
+    return max(total_intensity(omega1,d,100,omega_0,gamma_0))
 
-
-def normalized_intensity(omega, d, N, omega_experiment, omega_0, gamma_0):
-    return total_intensity(omega, d, N, omega_0, gamma_0) / find_max_intensity(d, omega_experiment, omega_0, gamma_0)
+def normalized_intensity(omega, d, N, omega_0, gamma_0):
+    return total_intensity(omega, d, N, omega_0, gamma_0) / find_max_intensity(d, omega_0, gamma_0)
 
 
 def find_grain_diameter(X, Y, min_size, max_size, size_step, omega_0, gamma_0, peak_height, offset):
-    X_ex = X
-    Y_ex = fit_lorentz.perform_fitting(X_ex, Y)
+	X_ex = X
+	Y_ex = fit_lorentz.perform_fitting(X_ex, Y)
 
-    x_constraint = (X_ex < 600) * (X_ex > 450)
-    X_fit = X_ex[x_constraint]
-    Y_fit = Y_ex[x_constraint]
+	x_constraint = (X_ex < 535) * (X_ex > 510)
+	X_fit = X_ex[x_constraint]
+	Y_fit = Y_ex[x_constraint]
 
-    list = arange(min_size, max_size, size_step)  # lista grubosci nanoziaren
-    suma = []
-    omega_exp = arange(450, 600, 2)
-    for diameter in list:
-        delta = 0
-        delta = np.sum(np.abs(
-            Y_ex - (peak_height * normalized_intensity(X_ex, diameter, 100, omega_exp, omega_0, gamma_0) + offset)))
-        suma.append(delta)
-    print min(suma), suma.index(min(suma)) * size_step + min_size
-    nanograin_size = suma.index(min(suma)) * size_step + min_size
-
-    figure = plt.Figure()
-    my_plot = figure.add_subplot(111)
-    my_plot.plot(omega_exp,
-                 [peak_height * normalized_intensity(omega, nanograin_size, 100, omega_exp, omega_0, gamma_0) + offset
+	list = arange(min_size, max_size, size_step)  # lista grubosci nanoziaren
+	suma=[]
+	omega_exp = arange(450,600,1)
+	for diameter in list:
+		delta = 0
+		delta = np.sum(np.abs(
+            Y_fit - (max(Y_fit) * normalized_intensity(X_fit, diameter, 100, omega_0, gamma_0) + offset)))
+		suma.append(delta)
+	print min(suma), suma.index(min(suma)) * size_step + min_size
+	nanograin_size = suma.index(min(suma)) * size_step + min_size
+	figure = plt.Figure()
+	my_plot = figure.add_subplot(111)
+	my_plot.plot(omega_exp,
+                 [max(Y_fit) * normalized_intensity(omega, nanograin_size, 100, omega_0, gamma_0) + offset
                   for omega in omega_exp], label="fitted for %snm" % nanograin_size)
-    my_plot.plot(X_fit, Y_fit, "o", label="exp data", color="c")
-    my_plot.legend(loc=1)
-    return (nanograin_size, figure)
+	my_plot.plot(X_fit, Y_fit, "o", label="exp data", color="c")
+	my_plot.legend(loc=1)
+	return (nanograin_size, figure)
 
 
 #########################################################################    
@@ -93,10 +88,11 @@ def main():
     result = load_files.load_two_column_file("../content/semiamorphSi1-514-20s-02.txt")
     X_ex = result[2]
     Y_ex = fit_lorentz.perform_fitting(X_ex, result[3])
+    d=find_grain_diameter(X_ex, Y_ex, 1., 20., 0.1, 522, 4, 2.13334158e+04, 0)
+    print d[0]
 
     x_constraint = (X_ex < 600) * (X_ex > 450)
     X_fit = X_ex[x_constraint]
-
     Y_fit = Y_ex[x_constraint]
 
 
@@ -108,22 +104,16 @@ def main():
     omega_exp = arange(450, 600, 2)
 
     for diameter in list:
-        delta = 0
-        delta = np.sum(np.abs(Y_ex - (
-            height_from_fit * total_intensity(X_ex, diameter, 100, omega0, gamma0) / find_max_intensity(diameter,
-                                                                                                        omega_exp,
+	    delta = 0
+	    delta = np.sum(np.abs(Y_ex - (
+		height_from_fit * total_intensity(X_ex, diameter, 100, omega0, gamma0) / find_max_intensity(diameter,
                                                                                                         omega0,
                                                                                                         gamma0) + offset_from_fit)))
-        suma.append(delta)
+	    suma.append(delta)
 
     print min(suma), suma.index(min(suma)) * 0.1 + 1
     nanograin = suma.index(min(suma)) * 0.1 + 1
-
-    plt.plot(omega_exp, [
-        height_from_fit * total_intensity(omega, nanograin, 100, omega0, gamma0) / find_max_intensity(nanograin,
-                                                                                                      omega_exp, omega0,
-                                                                                                      gamma0) + offset_from_fit
-        for omega in omega_exp], label="fit for %snm" % (nanograin))
+    plt.plot(omega_exp, [height_from_fit * total_intensity(omega, nanograin, 100, omega0, gamma0) / find_max_intensity(nanograin, omega0,gamma0) + offset_from_fit for omega in omega_exp], label="fit for %snm" % (nanograin))
     plt.plot(X_fit, Y_fit, "o", label="data", color="c")
     plt.legend(loc=1)
     plt.show()
