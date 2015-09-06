@@ -3,7 +3,7 @@ import nanograin_size
 # def createMap(name, minimum, maximum):
 
 
-def agg_data(data, min_size, max_size, size_step, omega_0, gamma_0, amplitude):
+def agg_data(data, min_size, max_size, size_step, omega_0, gamma_0, amplitude, sample_type):
     X = data[0]
     Y = data[1]
     raman_shift = data[2]
@@ -26,7 +26,7 @@ def agg_data(data, min_size, max_size, size_step, omega_0, gamma_0, amplitude):
             choose_condition = (Y == current_Y)*(X == current_X)
             func_result = nanograin_size.find_grain_diameter(raman_shift[choose_condition], intensity[choose_condition],
                                                              min_size, max_size, size_step, omega_0, gamma_0, amplitude,
-                                                             False)
+                                                             False, sample_type)
             column_diameter.append(func_result[0])  # function returns (diameter, hwhm, omega_0, peak_high)
             column_hwhm.append(func_result[1])
             column_omega_0.append(func_result[2])
@@ -50,7 +50,7 @@ def agg_data(data, min_size, max_size, size_step, omega_0, gamma_0, amplitude):
             choose_condition = (Y == current_Y)*(X == current_X)
             func_result = nanograin_size.find_grain_diameter(raman_shift[choose_condition], intensity[choose_condition],
                                                              min_size, max_size, size_step, omega_0, gamma_0, amplitude,
-                                                             False)
+                                                             False, sample_type)
             column_diameter.append(func_result[0])  # function returns (diameter, hwhm, omega_0, peak_high)
             column_hwhm.append(func_result[1])
             column_omega_0.append(func_result[2])

@@ -23,6 +23,8 @@ map_styles = ['Reds', 'YlOrRd', 'winter', 'rainbow']
 global selected_style
 global dataset_titles
 dataset_titles = ['Grain diameter[nm]', 'Peak center shift[cm^-1]', 'Full width at half maximum[cm^-1]', 'Intensity[arb]']
+global number_of_peaks_to_fit
+number_of_peaks_to_fit = 3
 #app_path = os.path.dirname(sys.argv[0])
 ###############################################################################
 #########################DEFINITIONS###########################################
@@ -35,8 +37,9 @@ def map_maker():
     # LOADING DATA AND AGGREGATION
     save_btn.place_forget()
     data = load_files.load_mapping_file(file_name.get())
+
     aggregated_data = agg.agg_data(data, float(min_size.get()), float(max_size.get())+float(size_step.get()), float(size_step.get()),
-                                   float(omega_0.get()), float(gamma_0.get()), float(amplitude.get()),
+                                   float(omega_0.get()), float(gamma_0.get()), float(amplitude.get()), number_of_peaks_to_fit
                                    )
 
     global datasets_for_map
@@ -97,7 +100,7 @@ def single_fitting(are_four_col):
     result = ns.find_grain_diameter(omega, intensity, float(min_size.get()), float(max_size.get())+float(size_step.get()),
                                     float(size_step.get()),
                                     float(omega_0.get()), float(gamma_0.get()), float(amplitude.get()),
-                                    True)
+                                    True, number_of_peaks_to_fit)
     global f
     f.clf()
     f = result[4]
@@ -321,6 +324,15 @@ def map_dataset_rbtn_select(event):
     canvas.get_tk_widget().config(border=0, width=650, height=450)
 
 
+def type_rbtn_select(event):
+    global number_of_peaks_to_fit
+    if event.widget["value"] == 1:
+        number_of_peaks_to_fit = 3
+    elif event.widget["value"] == 2:
+        number_of_peaks_to_fit = 2
+    elif event.widget["value"] == 3:
+        number_of_peaks_to_fit = 2
+
 v = tk.IntVar()
 rbtn_one = tk.Radiobutton(root,
                           text="Mapping file (four columns)",
@@ -374,21 +386,21 @@ type_rbtn_one = tk.Radiobutton(root,
                           value=1)
 type_rbtn_one.place(x=700, y=135)
 type_rbtn_one.select()
-# type_rbtn_one.bind("<Button-1>", type_rbtn_select)
+type_rbtn_one.bind("<Button-1>", type_rbtn_select)
 type_rbtn_two = tk.Radiobutton(root,
                           text="semiamorphous",
                           padx=0,
                           variable=type_var,
                           value=2)
 type_rbtn_two.place(x=700, y=155)
-# type_rbtn_two.bind("<Button-1>", type_rbtn_select)
+type_rbtn_two.bind("<Button-1>", type_rbtn_select)
 type_rbtn_three = tk.Radiobutton(root,
                           text="amorphous",
                           padx=0,
                           variable=type_var,
                           value=3)
 type_rbtn_three.place(x=700, y=175)
-# type_rbtn_three.bind("<Button-1>", type_rbtn_select)
+type_rbtn_three.bind("<Button-1>", type_rbtn_select)
 
 min_size_label = tk.Label(text="Min grain size to be checked [nm]:")
 min_size_label.place(x=680, y=200)
