@@ -1,6 +1,5 @@
 import Tkinter as tk
 from Tkinter import *
-from mercurial.revset import first
 import aggregate_data as agg
 from pylab import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -180,7 +179,7 @@ file_name.place(x=680, y=35)
 file_name.config(width=26)
 
 map_btn = tk.Button(text='Create map', command=map_maker, width=18)
-map_btn.place(x=680, y=450)
+map_btn.place(x=680, y=475)
 
 def save_figure():
     file_opt = options = {}
@@ -367,43 +366,67 @@ rbtn_four.bind("<Button-1>", rbtn_select)
 #final_shift.place(x=680, y=230)
 #final_shift.insert(0, "600")
 
+type_var = tk.IntVar()
+type_rbtn_one = tk.Radiobutton(root,
+                          text="policrystalline",
+                          padx=0,
+                          variable=type_var,
+                          value=1)
+type_rbtn_one.place(x=700, y=135)
+type_rbtn_one.select()
+# type_rbtn_one.bind("<Button-1>", type_rbtn_select)
+type_rbtn_two = tk.Radiobutton(root,
+                          text="semiamorphous",
+                          padx=0,
+                          variable=type_var,
+                          value=2)
+type_rbtn_two.place(x=700, y=155)
+# type_rbtn_two.bind("<Button-1>", type_rbtn_select)
+type_rbtn_three = tk.Radiobutton(root,
+                          text="amorphous",
+                          padx=0,
+                          variable=type_var,
+                          value=3)
+type_rbtn_three.place(x=700, y=175)
+# type_rbtn_three.bind("<Button-1>", type_rbtn_select)
+
 min_size_label = tk.Label(text="Min grain size to be checked [nm]:")
-min_size_label.place(x=680, y=140)
+min_size_label.place(x=680, y=200)
 min_size = tk.Entry()
-min_size.place(x=680, y=155)
+min_size.place(x=680, y=220)
 min_size.insert(0, 1)
 
 max_size_label = tk.Label(text="Max grain size to be checked [nm]:")
-max_size_label.place(x=680, y=180)
+max_size_label.place(x=680, y=240)
 max_size = tk.Entry()
-max_size.place(x=680, y=195)
+max_size.place(x=680, y=260)
 max_size.insert(0, 10)
 
 size_step_label = tk.Label(text="Step when checking size [nm]:")
-size_step_label.place(x=680, y=220)
+size_step_label.place(x=680, y=280)
 size_step = tk.Entry()
-size_step.place(x=680, y=235)
+size_step.place(x=680, y=300)
 size_step.insert(0, 0.5)
 
 parameters_label = tk.Label(text="Initial parameters of main peak:", font="Helvetica 10 bold")
-parameters_label.place(x=680, y=265)
+parameters_label.place(x=680, y=325)
 
 omega_0_label = tk.Label(text="omega [cm^-1]")
-omega_0_label.place(x=680, y=285)
+omega_0_label.place(x=680, y=345)
 omega_0 = tk.Entry()
-omega_0.place(x=680, y=305)
+omega_0.place(x=680, y=365)
 omega_0.insert(0, "521.604599812")
 
 gamma_0_label = tk.Label(text="gamma [cm^-1]")
-gamma_0_label.place(x=680, y=325)
+gamma_0_label.place(x=680, y=385)
 gamma_0 = tk.Entry()
-gamma_0.place(x=680, y=345)
+gamma_0.place(x=680, y=405)
 gamma_0.insert(0, "4.42010161931")
 
 amplitude_label = tk.Label(text="ampl [arb. u]")
-amplitude_label.place(x=680, y=370)
+amplitude_label.place(x=680, y=425)
 amplitude = tk.Entry()
-amplitude.place(x=680, y=385)
+amplitude.place(x=680, y=445)
 amplitude.insert(0, "71535.2586963")
 
 map_var = tk.IntVar()

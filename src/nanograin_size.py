@@ -88,9 +88,9 @@ def find_grain_diameter(X, Y, min_size, max_size, size_step, omega_0, gamma_0, p
         my_plot.plot(X_fit, Y_fit, ".", label="exp data", color="c")
         figure.suptitle("d:{0:.1f}[nm]   omega:{1:.4f}[cm^-1]   hwhm:{2:.4f}[cm^-1]   inten:{3:.4}[arb]".format(nanograin_size, single_lorentz_parameters[0], single_lorentz_parameters[1], single_lorentz_parameters[2]))
         my_plot.legend(loc=1)
-        return nanograin_size, single_lorentz_parameters[0], single_lorentz_parameters[1], single_lorentz_parameters[2], figure
+        return nanograin_size, single_lorentz_parameters[0], abs(single_lorentz_parameters[1]), single_lorentz_parameters[2], figure
     else:
-        return nanograin_size, single_lorentz_parameters[0], single_lorentz_parameters[1], single_lorentz_parameters[2]
+        return nanograin_size, single_lorentz_parameters[0], abs(single_lorentz_parameters[1]), single_lorentz_parameters[2]
 
 #########################################################################    
 def main():
