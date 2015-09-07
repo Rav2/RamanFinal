@@ -17,7 +17,7 @@ def lorentzian(x, coefficients):
         # within_bounds = (coefficients[0][1]>515)*(coefficients[1][1]<490)*(515>coefficients[2][1]>480) * \
         within_bounds =(coefficients[1][2]>0)*(coefficients[1][1]>490)#*(475<coefficients[1][1]<485)*(505>coefficients[2][1]>490)*(525>coefficients[0][1]>518)
     elif len(coefficients)==3:
-        within_bounds =(coefficients[2][2]>0)*(coefficients[1][2]>0)*(475<coefficients[2][1]<485)*(500>coefficients[1][1]>494)
+        within_bounds =(coefficients[2][2]>0)*(coefficients[1][2]>0)*(475<coefficients[2][1]<485)*(500>coefficients[1][1]>496)
     else:
         within_bounds=True
     for p in coefficients:
@@ -58,7 +58,9 @@ def perform_fitting(X, Y, omega_0, gamma_0, amplitude, sample_type):
         coefficients = [[3.5, 521.6, max(y_bg_corr), 0],
                         [19, 497, 1000, 0]]  # [hwhm, peak center, intensity] for three peaks
     elif sample_type==3:
-        coefficients = [[3.5, 521.6, max(y_bg_corr), 0],[15, 497, 1000, 0], [15, 480, 1200, 0]]
+        peak497_range=(X>497)*(X<501)
+        peak480_range=(X>475)*(X<485)
+        coefficients = [[3.5, 521.6, max(y_bg_corr), 0],[15, 498, 0.65*max(y_bg_corr[peak497_range]), 0], [20, 480, 0.65*max(y_bg_corr[peak480_range]), 0]]
     fitting_range=(X>400)*(X<800)
     pbest = leastsq(residuals, coefficients, args=(y_bg_corr[fitting_range], X[fitting_range]), full_output=1)
     #print pbest[0]
@@ -77,8 +79,8 @@ def perform_fitting(X, Y, omega_0, gamma_0, amplitude, sample_type):
 def main():
     #########################################################################
     ############################# LOADING DATA ##############################
-    sample_type=3
-    a = numpy.loadtxt("../content/SingleFiles/10.0.txt")
+    sample_type=2
+    a = numpy.loadtxt("../content/PolySiSingle/12.5.txt")
     x = a[:, 2]
     y = a[:, 3]
     #########################################################################
@@ -108,7 +110,9 @@ def main():
         coefficients = [[3.5, 521.6, max(y_bg_corr), 0],# [70, 480, 100, 0],
                         [19, 497, 1000, 0]]  # [hwhm, peak center, intensity] for three peaks
     elif sample_type==3:
-        coefficients = [[3.5, 521.6, max(y_bg_corr), 0],[15, 497, 1000, 0], [15, 480, 1200, 0]]
+        peak497_range=(x>497)*(x<501)
+        peak480_range=(x>475)*(x<485)
+        coefficients = [[3.5, 521.6, max(y_bg_corr), 0],[15, 498, 0.65*max(y_bg_corr[peak497_range]), 0], [20, 480, 0.65*max(y_bg_corr[peak480_range]), 0]]
     # print (coefficients)
     # optimization #
     fitting_range=(x>400)*(x<800)

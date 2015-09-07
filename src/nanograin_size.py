@@ -62,8 +62,9 @@ def find_grain_diameter(X, Y, min_size, max_size, size_step, omega_0, gamma_0, p
     X_ex = X
     Y_ex = fit_lorentz.perform_fitting(X_ex, Y, omega_0, gamma_0, peak_height, sample_type)
 
-    fitting_result = fit_old.perform_fitting(X_ex, Y_ex, 500, 600)
+    fitting_result = fit_old.perform_fitting(X_ex, Y_ex, 500, 580)
     single_lorentz_parameters = fitting_result[0]
+    #print single_lorentz_parameters
     x_constraint = (X_ex < 535) * (X_ex > 510)
     X_fit = X_ex[x_constraint]
     Y_fit = Y_ex[x_constraint]
@@ -96,10 +97,10 @@ def find_grain_diameter(X, Y, min_size, max_size, size_step, omega_0, gamma_0, p
 def main():
     #########################################################################
     ############################# LOADING DATA ##############################   
-    result = load_files.load_mapping_file("../content/SingleFiles/0.0.txt")
+    result = load_files.load_mapping_file("../content/SemiAmorphS1/25.5.txt")
     X_ex = result[2]
-    Y_ex = fit_lorentz.perform_fitting(X_ex, result[3])
-    d = find_grain_diameter(X_ex, Y_ex, 1., 20., 0.1, 522, 4, 2.13334158e+04, 0)
+    Y_ex = fit_lorentz.perform_fitting(X_ex, result[3], 522, 4, 0, 3)
+    d = find_grain_diameter(X_ex, Y_ex, 1., 20., 0.1, 522, 4, 2.13334158e+04, 0, 3)
     print d[0]
 
     x_constraint = (X_ex < 600) * (X_ex > 450)
