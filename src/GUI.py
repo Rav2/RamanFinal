@@ -43,8 +43,9 @@ def map_maker():
                                    )
 
     global datasets_for_map
-    for arg in datasets_for_map:
-        datasets_for_map.remove(arg)
+    del datasets_for_map[:]
+    # for arg in datasets_for_map:
+    #     datasets_for_map.remove(arg)
     for data_set in aggregated_data:
         data_array = np.array(data_set)
         min_value = min(__builtin__.map(min, data_set))
@@ -68,6 +69,8 @@ def map_maker():
     b = a.pcolor(datasets_for_map[selected_dataset][0], cmap=map_styles[selected_style], vmin=datasets_for_map[selected_dataset][1],
                  vmax=datasets_for_map[selected_dataset][2])
     f.colorbar(b)
+    a.set_xlabel("x ["+u"\u00B5"+"m]")
+    a.set_ylabel("y ["+u"\u00B5"+"m]")
     global canvas
     canvas = FigureCanvasTkAgg(f, master=root)
     canvas.get_tk_widget().place(x=0, y=30)
@@ -301,6 +304,8 @@ def map_rbtn_select(event):
     b = a.pcolor(datasets_for_map[selected_dataset][0], cmap=map_styles[selected_style], vmin=datasets_for_map[selected_dataset][1],
              vmax=datasets_for_map[selected_dataset][2])
     f.colorbar(b)
+    a.set_xlabel("x ["+u"\u00B5"+"m]")
+    a.set_ylabel("y ["+u"\u00B5"+"m]")
     canvas.get_tk_widget().destroy()
     canvas = FigureCanvasTkAgg(f, master=root)
     canvas.get_tk_widget().place(x=0, y=30)
@@ -318,6 +323,8 @@ def map_dataset_rbtn_select(event):
     b = a.pcolor(datasets_for_map[selected_dataset][0], cmap='PuBuGn', vmin=datasets_for_map[selected_dataset][1],
              vmax=datasets_for_map[selected_dataset][2])  #inne fajne cmap'y do wyboru: 'seismic' , 'coolwarm'
     f.colorbar(b)
+    a.set_xlabel("x ["+u"\u00B5"+"m]")
+    a.set_ylabel("y ["+u"\u00B5"+"m]")
     canvas.get_tk_widget().destroy()
     canvas = FigureCanvasTkAgg(f, master=root)
     canvas.get_tk_widget().place(x=0, y=30)
