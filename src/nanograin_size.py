@@ -59,7 +59,7 @@ def normalized_intensity(omega, d, N, omega_0, gamma_0):
 
 
 def find_grain_diameter(X, Y, min_size, max_size, size_step, omega_0, gamma_0, peak_height, return_figure, sample_type):
-    X_ex = X
+    X_ex = X #dlaczego
     Y_ex = fit_lorentz.perform_fitting(X_ex, Y, omega_0, gamma_0, peak_height, sample_type)
 
     fitting_result = fit_old.perform_fitting(X_ex, Y_ex, 500, 580)
