@@ -4,7 +4,7 @@
 import numpy
 import pylab
 from scipy.optimize import leastsq  # Levenberg-Marquadt Algorithm #
-
+import matplotlib.pyplot as plt
 
 
 
@@ -12,12 +12,18 @@ from scipy.optimize import leastsq  # Levenberg-Marquadt Algorithm #
 ########################### DEFINING FUNCTIONS ##########################
 
 def lorentzian(x, coefficients):
+    """
+
+    :param x:
+    :param coefficients: [[gamma_0, omega_0, amplitude, offset, from, to, is_lorentz],...]
+    :return:
+    """
     y = 0
     if len(coefficients)==2:
-        # within_bounds = (coefficients[0][1]>515)*(coefficients[1][1]<490)*(515>coefficients[2][1]>480) * \
-        within_bounds =(coefficients[1][2]>0)*(coefficients[1][1]>490)#*(475<coefficients[1][1]<485)*(505>coefficients[2][1]>490)*(525>coefficients[0][1]>518)
+        within_bounds =(coefficients[1][1]>coefficients[1][4])*(coefficients[1][1]<coefficients[1][5])#*(475<coefficients[1][1]<485)*(505>coefficients[2][1]>490)*(525>coefficients[0][1]>518)
     elif len(coefficients)==3:
-        within_bounds =(coefficients[2][2]>0)*(coefficients[1][2]>0)*(475<coefficients[2][1]<485)*(500>coefficients[1][1]>496)
+        within_bounds =(coefficients[1][1]>coefficients[1][4])*(coefficients[1][1]<coefficients[1][5])*\
+                       (coefficients[2][1]>coefficients[2][4])*(coefficients[2][1]<coefficients[2][5])
     else:
         within_bounds=True
     for p in coefficients:
@@ -31,11 +37,19 @@ def lorentzian(x, coefficients):
 
 
 def residuals(p, y, x):
+    """
+
+    :param p: [[gamma_0, omega_0, amplitude, offset, from, to, is_lorentz],...]
+    :param y:
+    :param x:
+    :return:
+    """
     elements_number = len(p)
+    #print (p)
     coefficients = []
-    if elements_number % 4 == 0:
-        for i in range(0, elements_number / 4):
-            coefficients.append(p[4 * i: 4 * (i + 1)])
+    if elements_number % 7 == 0:
+        for i in range(0, elements_number // 7):
+            coefficients.append(p[7 * i: 7 * (i + 1)])
     else:
         raise Exception('Number of coefficients provided for residuals(p,y,x) is wrong!!!')
     err = y - lorentzian(x, coefficients)
@@ -43,7 +57,15 @@ def residuals(p, y, x):
     return err
 
 
-def perform_fitting(X, Y, omega_0, gamma_0, amplitude, sample_type):
+def perform_fitting(X, Y, peaks_params):
+    """
+
+    :param X:
+    :param Y:
+    :param peaks_params: [[omega_0, gamma_0, amplitude, from, to, is_visible, is_lorentz], ...]
+    :return:
+    """
+    #print (peaks_params)
     ind_bg_low = (X > min(X)) & (X < 400.0)
     ind_bg_high = (X > 600.0) & (X < max(X))
     x_bg = numpy.concatenate((X[ind_bg_low], X[ind_bg_high]))
@@ -54,13 +76,18 @@ def perform_fitting(X, Y, omega_0, gamma_0, amplitude, sample_type):
     y_bg_corr = Y - background
     y_bg_peak_corr = Y - background
     # fit triple lorentz
-    if sample_type==2:
-        coefficients = [[3.5, 521.6, max(y_bg_corr), 0],
-                        [19, 497, 1000, 0]]  # [hwhm, peak center, intensity] for three peaks
-    elif sample_type==3:
-        peak497_range=(X>497)*(X<501)
-        peak480_range=(X>475)*(X<485)
-        coefficients = [[3.5, 521.6, max(y_bg_corr), 0],[15, 498, 0.65*max(y_bg_corr[peak497_range]), 0], [20, 480, 0.65*max(y_bg_corr[peak480_range]), 0]]
+    if len(peaks_params) == 1:
+        coefficients = [[peaks_params[0][1],peaks_params[0][0],max(y_bg_corr),0, peaks_params[0][3], peaks_params[0][4],peaks_params[0][6]]]
+    elif len(peaks_params)==2:
+        peak_2_range = (X>peaks_params[1][3])*(X<peaks_params[1][4])
+        coefficients = [[peaks_params[0][1],peaks_params[0][0],max(y_bg_corr),0, peaks_params[0][3], peaks_params[0][4],peaks_params[0][6]],
+                        [peaks_params[1][1],peaks_params[1][0], 0.65*max(y_bg_corr[peak_2_range]), 0, peaks_params[1][3], peaks_params[1][4],peaks_params[1][6]]]  # [hwhm, peak center, intensity] for three peaks
+    elif len(peaks_params)==3:
+        peak_2_range = (X>peaks_params[1][3])*(X<peaks_params[1][4])
+        peak_3_range = (X>peaks_params[2][3])*(X<peaks_params[2][4])
+        coefficients = [[peaks_params[0][1],peaks_params[0][0],max(y_bg_corr),0, peaks_params[0][3], peaks_params[0][4], peaks_params[0][6]],
+                       [peaks_params[1][1],peaks_params[1][0], 0.65*max(y_bg_corr[peak_2_range]), 0, peaks_params[1][3], peaks_params[1][4], peaks_params[1][6]],
+                       [peaks_params[2][1],peaks_params[2][0], 0.65*max(y_bg_corr[peak_3_range]), 0, peaks_params[2][3], peaks_params[2][4], peaks_params[2][6]]]
     fitting_range=(X>400)*(X<800)
     pbest = leastsq(residuals, coefficients, args=(y_bg_corr[fitting_range], X[fitting_range]), full_output=1)
     #print pbest[0]
@@ -70,6 +97,7 @@ def perform_fitting(X, Y, omega_0, gamma_0, amplitude, sample_type):
     # subtract peaks at 480cm^-1 and 496cm^-1
     best_params = iter(best_parameters)
     next(best_params)
+    print(best_params)
     for triple in best_params:
         y_bg_peak_corr -= (triple[0] ** 2 / ((X - triple[1]) ** 2 + triple[0] ** 2) * triple[2])
     return y_bg_peak_corr
@@ -117,7 +145,7 @@ def main():
     # optimization #
     fitting_range=(x>400)*(x<800)
     pbest = leastsq(residuals, coefficients, args=(y_bg_corr[fitting_range], x[fitting_range]), full_output=1)
-    print pbest[0]
+    print (pbest[0])
     best_parameters = []
     for i in range(0, int(len(pbest[0])/4)):
         best_parameters.append(pbest[0][4*i : 4*(i+1)])
@@ -161,11 +189,11 @@ def main():
     #########################################################################
     ############################## READING FIT PARAMETERS FROM 2ND LORENTZIAN #################################    
     height = best_parameters1[2]
-    print "height", height
+    print ("height", height)
     peak_center = best_parameters1[1]
-    print "peak_center", peak_center
+    print ("peak_center", peak_center)
     hwhm = best_parameters1[0]
-    print "hwhm", hwhm
+    print ("hwhm", hwhm)
     yTest=perform_fitting(x, y, 0, 0, 0, 2)
     pylab.plot(x, yTest, '.')
     pylab.show()
