@@ -123,6 +123,7 @@ def single_fitting(are_four_col):
         peak1.append(float(place_to_1.get()))
         peak1.append(visible_var_1.get())
         peak1.append(is_lorentz_var_1.get())
+        peak1.append(is_fano_var_1.get())
         peaks_params.append(peak1)
     if active_var_2.get():
         peak2 = []
@@ -332,6 +333,7 @@ def rbtn_select(event):
         is_lorentz_1.config(state="normal")
         is_lorentz_2.config(state="normal")
         is_lorentz_3.config(state="normal")
+        is_fano_1.config(state="normal")
         max_size.config(state=tk.NORMAL)
         min_size.config(state=tk.NORMAL)
         size_step.config(state=tk.NORMAL)
@@ -373,6 +375,7 @@ def rbtn_select(event):
         is_lorentz_1.config(state="normal")
         is_lorentz_2.config(state="normal")
         is_lorentz_3.config(state="normal")
+        is_fano_1.config(state="normal")
 
         max_size.config(state=tk.NORMAL)
         min_size.config(state=tk.NORMAL)
@@ -416,6 +419,7 @@ def rbtn_select(event):
         peak_active_1.config(state="disabled")
         peak_visible_1.config(state="disabled")
         is_lorentz_1.config(state="disabled")
+        is_fano_1.config(state="disabled")
 
         place_from_2.config(state="readonly")
         place_to_2.config(state="readonly")
@@ -628,6 +632,10 @@ is_lorentz_var_1 = tk.BooleanVar()
 is_lorentz_1 = tk.Checkbutton(text="lorentz", variable=is_lorentz_var_1)
 is_lorentz_1.place(x=1120, y=170)
 is_lorentz_var_1.set(True)
+is_fano_var_1 = tk.BooleanVar()
+is_fano_1 = tk.Checkbutton(text="fano", variable=is_fano_var_1)
+is_fano_1.place(x=1220, y=170)
+is_fano_var_1.set(False)
 
 ############################################################
 place_from_label_2 =tk.Label(text="place from [cm^-1]")
@@ -674,6 +682,10 @@ is_lorentz_var_2 = tk.BooleanVar()
 is_lorentz_2 = tk.Checkbutton(text="lorentz", variable=is_lorentz_var_2)
 is_lorentz_2.place(x=1120, y=315)
 is_lorentz_var_2.set(True)
+#is_fano_var_2 = tk.BooleanVar()
+#is_fano_2 = tk.Checkbutton(text="fano", variable=is_fano_var_1)
+#is_fano_2.place(x=1220, y=315)
+#is_fano_var_2.set(True)
 
 ############################################################
 place_from_label_3 =tk.Label(text="place from [cm^-1]")
@@ -720,6 +732,10 @@ is_lorentz_var_3= tk.BooleanVar()
 is_lorentz_3 = tk.Checkbutton(text="lorentz", variable=is_lorentz_var_3)
 is_lorentz_3.place(x=1120, y=460)
 is_lorentz_var_3.set(True)
+#is_fano_var_3= tk.BooleanVar()
+#is_fano_3 = tk.Checkbutton(text="fano", variable=is_lorentz_var_3)
+#is_fano_3.place(x=1220, y=460)
+#is_fano_var_3.set(True)
 ############################################################################
 ############################################################################
 

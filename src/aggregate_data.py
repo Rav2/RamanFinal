@@ -64,7 +64,7 @@ def agg_data(data, min_size, max_size, size_step, omega_0, gamma_0, amplitude, s
             print("x")
             print(current_X)
 
-    return result_diameter, result_hwhm, result_omega_0, result_intensity
-
+    #return result_diameter, result_hwhm, result_omega_0, result_intensity
+    return  result_hwhm, result_omega_0, result_intensity
 
 
