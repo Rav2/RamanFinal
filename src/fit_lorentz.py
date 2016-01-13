@@ -97,15 +97,9 @@ def perform_fitting(X, Y, peaks_params):
     # subtract peaks at 480cm^-1 and 496cm^-1
     best_params = iter(best_parameters)
     next(best_params)
-    print "to nasze best_params!!! "
-    print(best_params)
-   # print "best_params[0]", best_params.triple[0] 
-    #print "best_params[1]", best_params.triple[1] 
-   # print "best_params[2]", best_params.triple[2] 
+
     for triple in best_params:
-        print "triple[0]", triple[0]
-        print "triple[1]", triple[1] 
-        print "triple[2]", triple[2]  
+
         y_bg_peak_corr -= (triple[0] ** 2 / ((X - triple[1]) ** 2 + triple[0] ** 2) * triple[2])
     return y_bg_peak_corr
 
