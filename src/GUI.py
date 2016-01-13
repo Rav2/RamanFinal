@@ -693,7 +693,7 @@ place_from_label_3 =tk.Label(text="place from [cm^-1]")
 place_from_label_3.place(x=1130, y=340)
 place_from_3 = tk.Entry()
 place_from_3.place(x=1130, y=360)
-place_from_3.insert(0, "485.0")
+place_from_3.insert(0, "490.0")
 
 place_to_label_3 =tk.Label(text="place to [cm^-1]")
 place_to_label_3.place(x=1130, y=380)
