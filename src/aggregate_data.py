@@ -27,7 +27,7 @@ def agg_data(data, min_size, max_size, size_step, params, sample_type):
 
             choose_condition = (Y == current_Y)*(X == current_X)
             func_result = nanograin_size.find_grain_diameter(raman_shift[choose_condition], intensity[choose_condition],
-                                                             min_size, max_size, size_step, False, params, False)
+                                                             min_size, max_size, size_step, False, params, True)
             column_diameter.append(func_result[0])  # function returns (diameter, sigma, omega_0, peak_high)
             column_sigma.append(func_result[1])
             column_omega_0.append(func_result[2])
@@ -57,7 +57,7 @@ def agg_data(data, min_size, max_size, size_step, params, sample_type):
             choose_condition = (Y == current_Y)*(X == current_X)
             func_result = nanograin_size.find_grain_diameter(raman_shift[choose_condition], intensity[choose_condition],
                                                              min_size, max_size, size_step, False, params,
-                                                             False)
+                                                             True)
             column_diameter.append(func_result[0])  # function returns (diameter, sigma, omega_0, peak_high)
             column_sigma.append(func_result[1])
             column_omega_0.append(func_result[2])
@@ -73,6 +73,6 @@ def agg_data(data, min_size, max_size, size_step, params, sample_type):
 
 
     #return result_diameter, result_sigma, result_omega_0, result_intensity
-    return  result_sigma, result_omega_0, result_intensity
+    return  result_diameter, result_sigma, result_omega_0, result_intensity
 
 

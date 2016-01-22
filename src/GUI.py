@@ -28,7 +28,7 @@ global map_styles
 map_styles = ['Reds', 'YlOrRd', 'winter', 'rainbow']
 global selected_style
 global dataset_titles
-dataset_titles = ['Grain diameter[nm]', 'Peak center shift[cm^-1]', 'Full width at half maximum[cm^-1]', 'Intensity[arb]']
+dataset_titles = ['q parameter','Full width at half maximum[cm^-1]', 'Peak center shift[cm^-1]', 'Intensity[arb]']
 global number_of_peaks_to_fit
 number_of_peaks_to_fit = 3
 #app_path = os.path.dirname(sys.argv[0])
@@ -108,6 +108,10 @@ def map_maker():
     b = a.pcolor(datasets_for_map[selected_dataset][0], cmap=map_styles[selected_style], vmin=datasets_for_map[selected_dataset][1],
                  vmax=datasets_for_map[selected_dataset][2])
     f.colorbar(b)
+    a.set_yticks(np.arange(0,datasets_for_map[selected_dataset][0].shape[0],5))
+    a.set_xticks(np.arange(0,datasets_for_map[selected_dataset][0].shape[1],5))
+    a.set_xticklabels(np.arange(0,2*datasets_for_map[selected_dataset][0].shape[1],10))
+    a.set_yticklabels(np.arange(0,2*datasets_for_map[selected_dataset][0].shape[0],10))
     a.set_xlabel("x ["+u"\u00B5"+"m]")
     a.set_ylabel("y ["+u"\u00B5"+"m]")
     global canvas
@@ -298,19 +302,19 @@ def rbtn_select(event):
         place_to_1.config(state="normal")
         sigma_1.config(state=tk.NORMAL)
         sigma_0_1.config(state=tk.NORMAL)
-        amplitude_1.config(state="disabled")
+        amplitude_1.config(state="normal")
 
         place_from_2.config(state="normal")
         place_to_2.config(state="normal")
         sigma_2.config(state=tk.NORMAL)
         sigma_0_2.config(state=tk.NORMAL)
-        amplitude_2.config(state="disabled")
+        amplitude_2.config(state="normal")
 
         place_from_3.config(state="normal")
         place_to_3.config(state="normal")
         sigma_3.config(state=tk.NORMAL)
         sigma_0_3.config(state=tk.NORMAL)
-        amplitude_3.config(state="disabled")
+        amplitude_3.config(state="normal")
         if first_mapping == 1:
             notification_label.config(
                 text="Please note, that mapping may take some time, depending on number of measurements.")
@@ -341,19 +345,19 @@ def rbtn_select(event):
         place_to_1.config(state="normal")
         sigma_1.config(state=tk.NORMAL)
         sigma_0_1.config(state=tk.NORMAL)
-        amplitude_1.config(state="disabled")
+        amplitude_1.config(state="normal")
 
         place_from_2.config(state="normal")
         place_to_2.config(state="normal")
         sigma_2.config(state=tk.NORMAL)
         sigma_0_2.config(state=tk.NORMAL)
-        amplitude_2.config(state="disabled")
+        amplitude_2.config(state="normal")
 
         place_from_3.config(state="normal")
         place_to_3.config(state="normal")
         sigma_3.config(state=tk.NORMAL)
         sigma_0_3.config(state=tk.NORMAL)
-        amplitude_3.config(state="disabled")
+        amplitude_3.config(state="normal")
         if first_mapping == 1:
             notification_label.config(text="")
     elif event.widget["value"] == 3:
@@ -458,6 +462,10 @@ def map_rbtn_select(event):
     f.colorbar(b)
     a.set_xlabel("x ["+u"\u00B5"+"m]")
     a.set_ylabel("y ["+u"\u00B5"+"m]")
+    a.set_yticks(np.arange(0,datasets_for_map[selected_dataset][0].shape[0],5))
+    a.set_xticks(np.arange(0,datasets_for_map[selected_dataset][0].shape[1],5))
+    a.set_xticklabels(np.arange(0,2*datasets_for_map[selected_dataset][0].shape[1],10))
+    a.set_yticklabels(np.arange(0,2*datasets_for_map[selected_dataset][0].shape[0],10))
     canvas.get_tk_widget().destroy()
     canvas = FigureCanvasTkAgg(f, master=root)
     canvas.get_tk_widget().place(x=0, y=30)
@@ -479,6 +487,10 @@ def map_dataset_rbtn_select(event):
     f.colorbar(b)
     a.set_xlabel("x ["+u"\u00B5"+"m]")
     a.set_ylabel("y ["+u"\u00B5"+"m]")
+    a.set_yticks(np.arange(0,datasets_for_map[selected_dataset][0].shape[0],5))
+    a.set_xticks(np.arange(0,datasets_for_map[selected_dataset][0].shape[1],5))
+    a.set_xticklabels(np.arange(0,2*datasets_for_map[selected_dataset][0].shape[1],10))
+    a.set_yticklabels(np.arange(0,2*datasets_for_map[selected_dataset][0].shape[0],10))
     canvas.get_tk_widget().destroy()
     canvas = FigureCanvasTkAgg(f, master=root)
     canvas.get_tk_widget().place(x=0, y=30)

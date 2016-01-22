@@ -113,7 +113,7 @@ def find_grain_diameter(X, Y, min_size, max_size, size_step, return_figure,  pea
 
     X_ex = X
     max_y = max(Y)
-    x_bg_range = (X>570)*(X<600)
+    x_range = (X>400)*(X<600)
 
     lin_mod = LinearModel(prefix="background_", min=0, max=0.5*max_y)
     pars = lin_mod.guess(Y, x=X)
@@ -129,7 +129,7 @@ def find_grain_diameter(X, Y, min_size, max_size, size_step, return_figure,  pea
         elif peaks_params[ii][7]==True:
             mod = Model(fano_function)
             pars.update(mod.make_params())
-            pars['q'].set(-6, min=-6, max=0) #q may be negative as well as positive, the most common values for q: [-1,5]
+            pars['q'].set(-4, min=-20, max=0) #q may be negative as well as positive, the most common values for q: [-1,5]
             pars['center'].set(peaks_params[ii][0], vary=True)
             pars['sigma'].set(peaks_params[ii][1], min=0.1, vary=True)
             pars['amplitude'].set(peaks_params[ii][2], min=0)
@@ -145,23 +145,24 @@ def find_grain_diameter(X, Y, min_size, max_size, size_step, return_figure,  pea
         final_mod = final_mod + mod
 
 ###########PLOT & RETURN######################################
-    my_figure = plt.Figure()
-    x_range = (X>400)*(X<600)
-    my_plot = my_figure.add_subplot(111)
-    legend_labels = []
-    for ax in my_figure.axes:
-        ax.set_xlabel(u'\u03C9'+' [cm^-1]')
-        ax.set_ylabel('Intensity [arb.]')
+    if return_figure:
+        my_figure = plt.Figure()
 
-    my_plot.plot(X[x_range], Y[x_range], "ro")
-    legend_labels.append('Data')
+        my_plot = my_figure.add_subplot(111)
+        legend_labels = []
+        for ax in my_figure.axes:
+            ax.set_xlabel(u'\u03C9'+' [cm^-1]')
+            ax.set_ylabel('Intensity [arb.]')
 
-    out = final_mod.fit(Y, pars, x=X)
+        my_plot.plot(X[x_range], Y[x_range], "ro")
+        legend_labels.append('Data')
+
+    out = final_mod.fit(Y[x_range], pars, x=X[x_range])
     if not out.success:
         print("!!!!!!!!!!!!!FIT HAVE FAILED!!!!!!!!!!!")
         legend_labels = ['FIT FAILED!']
-        my_plot.legend(legend_labels)
         if return_figure:
+            my_plot.legend(legend_labels)
             return best_d, best_sigma, best_center, best_amplitude, my_figure
         else:
             return best_d, best_sigma, best_center, best_amplitude
@@ -170,41 +171,43 @@ def find_grain_diameter(X, Y, min_size, max_size, size_step, return_figure,  pea
             best_sigma = out.best_values['l'+str(0)+'_sigma']
             best_center = out.best_values['l'+str(0)+'_center']
             best_amplitude = out.best_values['l'+str(0)+'_amplitude']
+            return 0, best_sigma, best_center, best_amplitude
         elif(peaks_params[0][7]==True):
             best_sigma = out.best_values['sigma']
             best_center = out.best_values['center']
             best_amplitude = out.best_values['amplitude']
             best_q = out.best_values['q']
             print(best_q)
+            return best_q, best_sigma, best_center, best_amplitude
         else:
             best_sigma = out.best_values['sigma']
             best_center = out.best_values['center']
             best_amplitude = out.best_values['amplitude']
             best_d = out.best_values['d']
             print (best_d)
-        return best_d, best_sigma, best_center, best_amplitude
+            return best_d, best_sigma, best_center, best_amplitude
     else:
         print(out.fit_report(min_correl=0.5))
         legend_labels.append('Best fit')
 
-        my_plot.plot(X[x_range], out.best_fit[x_range], "b-")
+        my_plot.plot(X[x_range], out.best_fit, "b-")
         my_plot.plot(X[x_range], out.best_values['background_slope']*X[x_range]+out.best_values['background_intercept'], '--')
         legend_labels.append('background')
     
         for jj in range(0, len(peaks_params)):
             if(peaks_params[jj][6]==True):
-                    sigma = out.best_values['l'+str(jj)+'_sigma']
-                    center = out.best_values['l'+str(jj)+'_center']
-                    amplitude = out.best_values['l'+str(jj)+'_amplitude']
-                    legend_labels.append('l'+str(jj))
-                    my_plot.plot(X[x_range], lorentzian(X[x_range], center=center, sigma=sigma, amplitude=amplitude), '--')
+                sigma = out.best_values['l'+str(jj)+'_sigma']
+                center = out.best_values['l'+str(jj)+'_center']
+                amplitude = out.best_values['l'+str(jj)+'_amplitude']
+                legend_labels.append('l'+str(jj))
+                my_plot.plot(X[x_range], lorentzian(X[x_range], center=center, sigma=sigma, amplitude=amplitude), '--')
             elif (peaks_params[jj][7]==True):
-                    sigma = out.best_values['sigma']
-                    center = out.best_values['center']
-                    amplitude = out.best_values['amplitude']
-                    q = out.best_values['q']
-                    legend_labels.append('fano; q='+str(q))
-                    my_plot.plot(X[x_range], fano_function(X[x_range], q,  center, sigma, amplitude), '--')
+                sigma = out.best_values['sigma']
+                center = out.best_values['center']
+                amplitude = out.best_values['amplitude']
+                q = out.best_values['q']
+                legend_labels.append('fano; q='+str(q))
+                my_plot.plot(X[x_range], fano_function(X[x_range], q,  center, sigma, amplitude), '--')
             else:
                 sigma = out.best_values['sigma']
                 center = out.best_values['center']
@@ -214,18 +217,27 @@ def find_grain_diameter(X, Y, min_size, max_size, size_step, return_figure,  pea
                 legend_labels.append('fc; d='+str(d))
                 my_plot.plot(X[x_range], total_intensity_fit_func(X[x_range], d, N, center, sigma, amplitude), '--')
 
-        my_plot.legend(legend_labels)
-        if(peaks_params[jj][7]==True):
+        if(peaks_params[0][7]==True):
             my_figure.suptitle("q:{0:.1f}[nm]   omega:{1:.4f}[cm^-1]   sigma:{2:.4f}[cm^-1]    inten:{3:.4}[arb]".format(float(best_q), float(best_center), float(best_sigma), float(best_amplitude)))
         else:
             my_figure.suptitle("d:{0:.1f}[nm]   omega:{1:.4f}[cm^-1]   sigma:{2:.4f}[cm^-1]    inten:{3:.4}[arb]".format(float(best_d), float(best_center), float(best_sigma), float(best_amplitude)))
-        my_plot.legend(loc=1)
+        my_plot.legend(legend_labels, loc=2)
+
         return best_d, best_sigma, best_center, best_amplitude, my_figure
     
          
 #########################################################################    
 def main():
-  print('Hello!')
+    omega = np.arange(480, 550, 0.1)
+    plt.plot(omega, fano_function(omega, -3, 520, 6, 1)/max(fano_function(omega, -3, 520, 6, 1)), label="data for q=-3")
+    plt.plot(omega, fano_function(omega, -5, 520, 6, 1)/max(fano_function(omega, -5, 520, 6, 1)), label="data for q=-5")
+    plt.plot(omega, fano_function(omega, -10, 520, 6, 1)/max(fano_function(omega, -10, 520, 6, 1)), label="data for q=-10")
+    plt.legend()
+    plt.ylabel("Normalized Raman Intensity [a.u.]", fontsize=15)
+    plt.xlabel("Wavenumber [cm"+r'$^{-1}$'+"]", fontsize=15)
+    plt.axis((480, 550, 0, 1.1))
+    plt.show()
+    print('Hello!')
 
 #########################################################################
 if __name__ == "__main__":
